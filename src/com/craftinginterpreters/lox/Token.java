@@ -1,5 +1,8 @@
 package com.craftinginterpreters.lox;
 
+/**
+ * Represents a single token with type, lexeme, literal value, and line number.
+ */
 public class Token {
     final TokenType type; // The type of the token, represented by the TokenType enum
     final String lexeme; // The string representation of the token

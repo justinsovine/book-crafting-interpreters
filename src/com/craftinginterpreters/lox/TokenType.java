@@ -1,8 +1,9 @@
 package com.craftinginterpreters.lox;
 
-/** 
- * An enum type is a special data type that enables for a variable to be a set of predefined constants. 
- * The variable must be equal to one of the values that have been predefined for it.
+/**
+ * Represents the different types of tokens that can be identified by the scanner.
+ * These tokens are the basic building blocks of the language's syntax and are used
+ * by the parser to construct the Abstract Syntax Tree (AST).
  */
 enum TokenType {
     // Single-character tokens
@@ -12,7 +13,7 @@ enum TokenType {
     // One or two character tokens.
     BANG, BANG_EQUAL,
     EQUAL, EQUAL_EQUAL,
-    GRETER, GREATER_EQUAL,
+    GREATER, GREATER_EQUAL,
     LESS, LESS_EQUAL,
 
     /**

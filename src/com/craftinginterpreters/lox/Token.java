@@ -9,7 +9,7 @@ public class Token {
     final Object literal; // An optional field that holds the literal value of the token (e.g. number or string)
     final int line; // The line number in the source code where the token appears
 
-    // This constructor initializes a new instance of the Token class
+    // Constructor
     Token(TokenType type, String lexeme, Object literal, int line) {
         this.type = type;
         this.lexeme = lexeme;
@@ -19,6 +19,7 @@ public class Token {
 
     // This method overrides the toString() method from the Object class
     // Useful for debugging/logging token contents
+    
     public String toString() {
         return type + " " + lexeme + " " + literal;
     }

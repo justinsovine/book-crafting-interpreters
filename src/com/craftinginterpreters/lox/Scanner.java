@@ -86,12 +86,37 @@ public class Scanner {
             case '\n':
                 line++;
                 break;
+            
+            // String literals
+            case '"': string(); break;
 
             default:
                 // Invalid characters are still consumed by `advance()` to prevent infinite loop
                 Lox.error(line, "Unexpected character.");
                 break;
         }
+    }
+    
+    private void string() {
+        // Look ahead until end of string (or file)
+        while (peek() != '"' && !isAtEnd()) {
+            // Increment line counter if newline detected
+            if (peek() == '\n') line++;
+            // Consume next character
+            advance();
+        }
+
+        // String was not terminated. Throw error.
+        if (isAtEnd()) {
+            Lox.error(line, "Unterminated string.");
+        }
+
+        // Consume the closing double quote
+        advance();
+
+        // Trim the surrounding quotes.
+        String value = source.substring(start + 1, current -1);
+        addToken(STRING, value);
     }
 
     /**

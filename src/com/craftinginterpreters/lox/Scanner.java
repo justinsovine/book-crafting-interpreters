@@ -40,7 +40,7 @@ public class Scanner {
         while (!isAtEnd()) {
             // We are at the beginning of the next lexeme.
             start = current;
-            scanToken();
+            scanToken();   
         }
 
         tokens.add(new Token(EOF, "", null, line));
@@ -110,16 +110,31 @@ public class Scanner {
             case '"': string(); break;
 
             default:
+                // Character is a number
                 if (isDigit(c)) {
                     // It’s kind of tedious to add cases for every decimal digit.
-                    // Stuffing it in the default case instead
+                    // So let's stuff it in the default case instead
                     number();
+
+                // Character is alphabetical or an underscore
+                } else if (isAlpha(c)) {
+                    // ...
+                    identifier();
+
+                // Catch all
                 } else {
                     // Invalid characters are still consumed by `advance()` to prevent infinite loop
                     Lox.error(line, "Unexpected character.");
                 }
                 break;
         }
+    }
+
+    private void identifier() {
+        // Consume characters until end of alphanumeric lexeme
+        while (isAlphaNumeric(peek())) advance();
+
+        addToken(IDENTIFIER);
     }
 
     /**
@@ -192,7 +207,8 @@ public class Scanner {
      * "Lookahead" - Similar to `advance()` except it doesn't consume the character.
      * The rules of the lexical grammar dictate how much lookahead we need. Fortunately, 
      * most languages in wide use peek only one or two characters ahead.
-     * @return
+     * 
+     * @return 
      */
     private char peek() {
         // If we've consumed all the characters, return null character
@@ -203,6 +219,7 @@ public class Scanner {
 
     /**
      * Similar to `peek()` except it looks two characters ahead.
+     * 
      * @return
      */
     private char peekNext() {
@@ -210,6 +227,18 @@ public class Scanner {
         if (current + 1 >= source.length()) return '\0';
         // Otherwise, return two characters ahead
         return source.charAt(current + 1);
+    }
+
+    /**
+     * Checks to see if character is alphabetical or an  underscore
+     * 
+     * @param c
+     * @return
+     */
+    private boolean isAlpha(char c) {
+        return (c >= 'a' && c <= 'z') ||
+               (c >= 'A' && c <= 'Z') ||
+                c == '_'; 
     }
 
     /**

@@ -38,6 +38,7 @@ public class Scanner {
     private void scanToken() {
         char c = advance();
         switch (c) {
+            // One token lexemes
             case '(': addToken(LEFT_PAREN); break;
             case ')': addToken(RIGHT_PAREN); break;
             case '{': addToken(LEFT_BRACE); break;
@@ -48,6 +49,8 @@ public class Scanner {
             case '+': addToken(PLUS); break;
             case ';': addToken(SEMICOLON); break;
             case '*': addToken(STAR); break;
+
+            // Two token lexemes
             case '!': 
                 addToken(match('=') ? BANG_EQUAL : BANG);
                 break;
@@ -59,6 +62,16 @@ public class Scanner {
                 break;
             case '>': 
                 addToken(match('=') ? GREATER_EQUAL : GREATER);
+                break;
+
+            // Single-line comments
+            case '/':
+                if (match('/')) {
+                    // Consume characters until newline is detected
+                    while (peek() != '\n' && !isAtEnd()) advance();
+                } else {
+                    addToken(SLASH);
+                }
                 break;
 
             default:
@@ -82,7 +95,20 @@ public class Scanner {
     }
 
     /**
-     * Helper function to tell us if we've consumed all of the characters
+     * "Lookahead" - Similar to `advance()` except it doesn't consume the character.
+     * The rules of the lexical grammar dictate how much lookahead we need. Fortunately, 
+     * most languages in wide use peek only one or two characters ahead.
+     * @return
+     */
+    private char peek() {
+        // If we've consumed all the characters, return null character
+        if (isAtEnd()) return '\0';
+        // Otherwise, return 
+        return source.charAt(current);
+    }
+
+    /**
+     * "EOF" - Checks to see if all characters in source string have been consumed.
      * @return
      */
     private boolean isAtEnd() {
@@ -90,7 +116,7 @@ public class Scanner {
     }
 
     /**
-     * Consumes the next character in the source file and returns it
+     * Consumes the next character in the source file and returns it.
      * @return
      */
     private char advance() {

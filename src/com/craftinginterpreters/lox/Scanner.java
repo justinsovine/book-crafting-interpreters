@@ -20,6 +20,10 @@ public class Scanner {
     // Tracks what source line `current` is on so we can produce tokens that know their location
     private int line = 1;
 
+    /**
+     * Constructor method
+     * @param source
+     */
     Scanner(String source) {
         this.source = source;
     }
@@ -144,6 +148,7 @@ public class Scanner {
     
     /**
      * Multi-line strings
+     * 
      * Consumes characters until string is terminated
      */
     private void string() {
@@ -170,9 +175,10 @@ public class Scanner {
     }
 
     /**
-     * ...
-     * @param expected
-     * @return
+     * Checks if the next character matches the expected character and advances the position if it does.
+     * 
+     * @param expected the character to match.
+     * @return true if the next character matches and the position is advanced, false otherwise.
      */
     private boolean match (char expected) {
         if (isAtEnd()) return false;

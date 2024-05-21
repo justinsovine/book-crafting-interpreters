@@ -24,6 +24,14 @@ public class Scanner {
         this.source = source;
     }
 
+    /**
+     * Scans all tokens from the source code and returns a list of tokens.
+     * 
+     * This method repeatedly calls {@link #scanToken()} until the end of the source is reached.
+     * At the end, it adds an EOF token to signify the end of the input.
+     * 
+     * @return a list of tokens extracted from the source code.
+     */
     List<Token> scanTokens() {
         while (!isAtEnd()) {
             // We are at the beginning of the next lexeme.
@@ -35,6 +43,13 @@ public class Scanner {
         return tokens;
     }
 
+    /** 
+     * Scans the next token from the source code and adds it to the list of tokens.
+     * 
+     * This method handles single-character tokens, two-character tokens, 
+     * string literals, numeric literals, and skips whitespace and comments.
+     * It is called by {@link #scanTokens()} to process each lexeme in the source code.
+     */
     private void scanToken() {
         char c = advance();
         switch (c) {
@@ -91,10 +106,40 @@ public class Scanner {
             case '"': string(); break;
 
             default:
-                // Invalid characters are still consumed by `advance()` to prevent infinite loop
-                Lox.error(line, "Unexpected character.");
+                if (isDigit(c)) {
+                    // It’s kind of tedious to add cases for every decimal digit.
+                    // Stuffing it in the default case instead
+                    number();
+                } else {
+                    // Invalid characters are still consumed by `advance()` to prevent infinite loop
+                    Lox.error(line, "Unexpected character.");
+                }
                 break;
         }
+    }
+
+    /**
+     * Scans a numeric literal from the source text. Handles both integers and floating-point numbers.
+     */
+    private void number() {
+        // Look ahead until character is not a number
+        while (isDigit(peek())) advance();
+
+        // Look for a fractional part. This requires a second character of lookahead since we 
+        // don't want to consume the . until we're sure there is a digit after it.
+        if (peek() == '.' && isDigit(peekNext())) {
+            // Consume the "."
+            advance();
+
+            // Look ahead until end of fractional
+            while (isDigit(peek())) advance();
+        }
+
+        // Convert lexeme to its numeric value.
+        // We’re using Java’s own parsing method to convert the lexeme to a real Java double. We can implement this  
+        // ourselves, but, honestly, unless you’re trying to cram for an upcoming programming interview, 
+        // it’s not worth your time.
+        addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
     }
     
     /**
@@ -115,7 +160,7 @@ public class Scanner {
             Lox.error(line, "Unterminated string.");
         }
 
-        // Consume the closing double quote
+        // Consume the closing "
         advance();
 
         // Trim the surrounding quotes.
@@ -146,8 +191,28 @@ public class Scanner {
     private char peek() {
         // If we've consumed all the characters, return null character
         if (isAtEnd()) return '\0';
-        // Otherwise, return 
+        // Otherwise, return character
         return source.charAt(current);
+    }
+
+    /**
+     * Similar to `peek()` except it looks two characters ahead.
+     * @return
+     */
+    private char peekNext() {
+        // If less than two characters are left to consume, return null character
+        if (current + 1 >= source.length()) return '\0';
+        // Otherwise, return two characters ahead
+        return source.charAt(current + 1);
+    }
+
+    /**
+     * Checks to see if character is a number
+     * @param c
+     * @return
+     */
+    private boolean isDigit(char c) {
+        return c >= '0' && c <= '9';
     }
 
     /**

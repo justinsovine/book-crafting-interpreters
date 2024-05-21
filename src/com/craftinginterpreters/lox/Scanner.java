@@ -97,6 +97,10 @@ public class Scanner {
         }
     }
     
+    /**
+     * Multi-line strings
+     * Consumes characters until string is terminated
+     */
     private void string() {
         // Look ahead until end of string (or file)
         while (peek() != '"' && !isAtEnd()) {
@@ -115,6 +119,7 @@ public class Scanner {
         advance();
 
         // Trim the surrounding quotes.
+        // Produces the actual string value that will be used later by the interpreter
         String value = source.substring(start + 1, current -1);
         addToken(STRING, value);
     }

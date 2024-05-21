@@ -73,6 +73,19 @@ public class Scanner {
                     addToken(SLASH);
                 }
                 break;
+            
+            // "Whitespace" - Skip spaces, carriage returns, and tabs
+            case ' ':
+            // Skip carriage return
+            case '\r':
+            // Skip tab
+            case '\t':
+                break;
+            
+            // "Newline" - Increment the line number and skip
+            case '\n':
+                line++;
+                break;
 
             default:
                 // Invalid characters are still consumed by `advance()` to prevent infinite loop

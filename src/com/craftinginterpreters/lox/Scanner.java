@@ -29,6 +29,31 @@ public class Scanner {
     }
 
     /**
+     * Define the set of reserved keywords and corresponding TokenType in a Map
+     */ 
+    private static final Map<String, TokenType> keywords;
+
+    static {
+        keywords = new HashMap<>();
+        keywords.put("and",     AND);
+        keywords.put("class",   CLASS);
+        keywords.put("else",    ELSE);
+        keywords.put("false",   FALSE);
+        keywords.put("for",     FOR);
+        keywords.put("fun",     FUN);
+        keywords.put("if",      IF);
+        keywords.put("nil",     NIL);
+        keywords.put("or",      OR);
+        keywords.put("print",   PRINT);
+        keywords.put("return",  RETURN);
+        keywords.put("super",   SUPER);
+        keywords.put("this",    THIS);
+        keywords.put("true",    TRUE);
+        keywords.put("var",     VAR);
+        keywords.put("while",   WHILE);
+    }
+
+    /**
      * Scans all tokens from the source code and returns a list of tokens.
      * 
      * This method repeatedly calls {@link #scanToken()} until the end of the source is reached.
@@ -111,14 +136,14 @@ public class Scanner {
 
             default:
                 // Character is a number
+                // It’s kind of tedious to add cases for every decimal digit, 
+                // so let's stuff it in the default case instead
                 if (isDigit(c)) {
-                    // It’s kind of tedious to add cases for every decimal digit.
-                    // So let's stuff it in the default case instead
                     number();
 
                 // Character is alphabetical or an underscore
+                // We assume that any lexeme starting with a letter or an underscore is an identifier
                 } else if (isAlpha(c)) {
-                    // ...
                     identifier();
 
                 // Catch all
@@ -130,11 +155,24 @@ public class Scanner {
         }
     }
 
+    /**
+     * Handles the scanning and tokenizing of an identifier or a reserved keyword
+     */
     private void identifier() {
-        // Consume characters until end of alphanumeric lexeme
+        // Consume characters until a non-alphanumeric character is encountered
         while (isAlphaNumeric(peek())) advance();
 
-        addToken(IDENTIFIER);
+        // Extract the lexeme for the identifier
+        String text = source.substring(start, current);
+        
+        // Determine the token type based on the lexeme
+        TokenType type = keywords.get(text);
+        
+        // If the lexeme is not a reserved keyword, classify it as a user-defined identifier
+        if (type == null) type = IDENTIFIER;
+
+        // Add the identified token to the token list
+        addToken(type);
     }
 
     /**
@@ -230,7 +268,7 @@ public class Scanner {
     }
 
     /**
-     * Checks to see if character is alphabetical or an  underscore
+     * Checks to see if character is alphabetical or an underscore
      * 
      * @param c
      * @return
@@ -239,6 +277,16 @@ public class Scanner {
         return (c >= 'a' && c <= 'z') ||
                (c >= 'A' && c <= 'Z') ||
                 c == '_'; 
+    }
+
+    /**
+     * Checks to see if character is alphanumeric
+     * 
+     * @param c
+     * @return
+     */
+    private boolean isAlphaNumeric(char c) {
+        return isAlpha(c) || isDigit(c);
     }
 
     /**
